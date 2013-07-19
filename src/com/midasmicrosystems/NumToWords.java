@@ -1,19 +1,18 @@
 /*
-Copyright 2013 Midas Microsystems
+ Copyright 2013 Midas Microsystems
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-     http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
-
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
 package com.midasmicrosystems;
 
 import java.util.ArrayList;
@@ -23,9 +22,10 @@ import java.util.Map;
 
 /**
  * Responsible for converting a given number to its word representation.
- * 
- * 
- * @author Adedayo Ominiyi(adedayoominiyi@gmail.com, ominiyi_freeman@yahoo.co.uk)
+ *
+ *
+ * @author Adedayo Ominiyi(adedayoominiyi@gmail.com,
+ * ominiyi_freeman@yahoo.co.uk)
  */
 public class NumToWords {
 
@@ -39,10 +39,10 @@ public class NumToWords {
             put(6, "quintillion");
         }
     };
-    
+
     public String convertNumberToWord(long number) {
         StringBuilder stringRep = new StringBuilder();
-        
+
         final int splitSize = 3;
         // Split the number into chunks of 3.
         List<String> chunks = splitStringIntoChunks(reverseString(String.valueOf(number)), splitSize);
@@ -50,44 +50,52 @@ public class NumToWords {
         // Treat the chunks in reverse.
         int chunksSize = chunks.size();
         for (int i = (chunksSize - 1); i >= 0; i--) {
-            int threeDigitNumber = Integer.parseInt(chunks.get(i), 10);
+            boolean wordAppended = false;
+            String strAtChunk = chunks.get(i);
+
+            int threeDigitNumber = Integer.parseInt(strAtChunk, 10);
 
             int hundredth = threeDigitNumber / 100;
             if (hundredth > 0) {
-                stringRep.append(getWordRepresentationForNumber(hundredth));
-                stringRep.append(" hundred ");
+                wordAppended = true;
+                stringRep.append((" " + getWordRepresentationForNumber(hundredth)));
+                stringRep.append(" hundred");
             }
 
             int tenth = threeDigitNumber % 100;
             // Pad with 'and' as necessary
             if ((tenth > 0) && (i == 0)) {
                 if (hundredth > 0 || chunksSize > 1) {
-                    stringRep.append("and ");
+                    stringRep.append(" and");
+
                 }
             } else if ((tenth > 0) && (i > 0) && hundredth > 0) {
-                stringRep.append("and ");
+                stringRep.append(" and");
             }
-
-            if ((tenth > 10) & (tenth < 20)) {
-                stringRep.append(getWordRepresentationForNumber(tenth));
-                stringRep.append(" ");
+            if ((tenth > 0) && (tenth <= 19)) {
+                wordAppended = true;
+                stringRep.append((" " + getWordRepresentationForNumber(tenth)));
             } else {
+                // tenth is greater than or equal to twenty
                 tenth = tenth / 10;
                 if (tenth > 0) {
-                    stringRep.append(getWordRepresentationForNumber(tenth * 10));
-                    stringRep.append('-');
+                    wordAppended = true;
+                    stringRep.append((" " + getWordRepresentationForNumber(tenth * 10)));
                 }
                 int unit = (threeDigitNumber % 100) % 10;
+                if (unit > 0 && tenth > 0) {
+                    stringRep.append('-');
+                }
                 if (unit > 0) {
+                    wordAppended = true;
                     stringRep.append(getWordRepresentationForNumber(unit));
-                    stringRep.append(" ");
                 }
             }
 
-            stringRep.append((placeHolders.get(i) == null ? "" : (placeHolders.get(i) + " ")));
+            if (wordAppended) {
+                stringRep.append((placeHolders.get(i) == null ? "" : (" " + placeHolders.get(i))));
+            }
         }
-
-        // Trim to remove trailing white space.
         return stringRep.toString().trim();
     }
 
